@@ -1,8 +1,8 @@
 {
   "website": "https://www.amazon.in",
-  "loadTime": 1137,
+  "loadTime": 1409,
   "browser": {
-    "Timestamp": 413247.641098,
+    "Timestamp": 418512.839367,
     "AudioHandlers": 0,
     "AudioWorkletProcessors": 0,
     "Documents": 3,
@@ -26,26 +26,26 @@
     "RecalcStyleCount": 0,
     "LayoutDuration": 0,
     "RecalcStyleDuration": 0,
-    "DevToolsCommandDuration": 0.000027,
+    "DevToolsCommandDuration": 0.00002,
     "ScriptDuration": 0,
     "V8CompileDuration": 0,
-    "TaskDuration": 0.000032,
+    "TaskDuration": 0.000025,
     "TaskOtherDuration": 0.000005,
-    "ThreadTime": 0.000089,
-    "ProcessTime": 0.334707,
-    "JSHeapUsedSize": 5053724,
-    "JSHeapTotalSize": 9961472,
+    "ThreadTime": 0,
+    "ProcessTime": 0.34375,
+    "JSHeapUsedSize": 5296236,
+    "JSHeapTotalSize": 9699328,
     "FirstMeaningfulPaint": 0,
-    "DomContentLoaded": 413247.58536,
-    "NavigationStart": 413246.500921
+    "DomContentLoaded": 418512.782389,
+    "NavigationStart": 418511.427406
   },
   "navigation": {
     "startTime": 0,
-    "domComplete": 1132.300000011921,
-    "domInteractive": 1084.300000011921,
-    "responseStart": 124.19999998807907,
-    "responseEnd": 125.19999998807907,
-    "loadEventEnd": 1132.300000011921,
+    "domComplete": 1401.5,
+    "domInteractive": 1355,
+    "responseStart": 325,
+    "responseEnd": 325.9000000357628,
+    "loadEventEnd": 1401.5,
     "redirectCount": 0,
     "transferSize": 2312,
     "encodedBodySize": 2012,
@@ -55,7 +55,7 @@
   "resources": [
     {
       "name": "https://1c5c1ecf7303.0b384439.ap-southeast-1.token.awswaf.com/1c5c1ecf7303/6ab7d267eef9/66125abca348/challenge.js",
-      "duration": 827.6999999880791,
+      "duration": 892.4000000357628,
       "initiatorType": "script",
       "transferSize": 0
     }
