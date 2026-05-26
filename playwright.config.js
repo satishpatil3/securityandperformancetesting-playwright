@@ -1,5 +1,8 @@
 const { defineConfig, devices } = require('@playwright/test');
 
+// Standardize the BASE_URL environment variable
+process.env.BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
 module.exports = defineConfig({
   testDir: './tests',
   fullyParallel: false,
@@ -9,7 +12,7 @@ module.exports = defineConfig({
   reporter: 'html',
   timeout: 60000,
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: process.env.BASE_URL,
     trace: 'on-first-retry',
     actionTimeout: 15000,
     navigationTimeout: 30000,

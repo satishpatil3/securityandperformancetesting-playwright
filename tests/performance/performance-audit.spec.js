@@ -14,73 +14,63 @@ test.describe(
   'Performance Testing Suite',
   () => {
 
-  const websites = [
+  test(
+    'Performance Audit',
+    async ({ page, baseURL }) => {
 
-    'https://www.google.com',
+    const targetUrl = baseURL || 'http://localhost:3000';
 
-    'https://www.amazon.in',
+    Logger.header(
+      `Testing ${targetUrl}`
+    );
 
-    'https://www.wikipedia.org'
-  ];
+    const results =
+      await PerformanceHelper
+        .runFullAudit(
+          page,
+          targetUrl
+        );
 
-  for (const website of websites) {
+    // Threshold Validation
 
-    test(
-      `Performance Audit - ${website}`,
-      async ({ page }) => {
+    if (
+      results.loadTime >
+      THRESHOLDS.MAX_LOAD_TIME
+    ) {
 
-      Logger.header(
-        `Testing ${website}`
+      Logger.warn(
+        `Slow Page Load: ${results.loadTime} ms`
       );
 
-      const results =
-        await PerformanceHelper
-          .runFullAudit(
-            page,
-            website
-          );
+    } else {
 
-      // Threshold Validation
-
-      if (
-        results.loadTime >
-        THRESHOLDS.MAX_LOAD_TIME
-      ) {
-
-        Logger.warn(
-          `Slow Page Load: ${results.loadTime} ms`
-        );
-
-      } else {
-
-        Logger.success(
-          `Good Page Load Time`
-        );
-      }
-
-      if (
-        results.browserMetrics.Nodes >
-        THRESHOLDS.MAX_DOM_NODES
-      ) {
-
-        Logger.warn(
-          'Too Many DOM Nodes'
-        );
-      }
-
-      if (
-        results.browserMetrics.JSHeapUsedSize >
-        THRESHOLDS.MAX_JS_HEAP_SIZE
-      ) {
-
-        Logger.warn(
-          'High JS Heap Usage'
-        );
-      }
-
-      Logger.testEnd(
-        `Performance Audit - ${website}`
+      Logger.success(
+        `Good Page Load Time`
       );
-    });
-  }
+    }
+
+    if (
+      results.browserMetrics.Nodes >
+      THRESHOLDS.MAX_DOM_NODES
+    ) {
+
+      Logger.warn(
+        'Too Many DOM Nodes'
+      );
+    }
+
+    if (
+      results.browserMetrics.JSHeapUsedSize >
+      THRESHOLDS.MAX_JS_HEAP_SIZE
+    ) {
+
+      Logger.warn(
+        'High JS Heap Usage'
+      );
+    }
+
+    Logger.testEnd(
+      `Performance Audit - ${targetUrl}`
+    );
+  });
 });

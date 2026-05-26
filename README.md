@@ -157,9 +157,8 @@ To load it, ensure `dotenv` is installed (`npm install dotenv --save-dev`) and i
 
 ### Sample Environment Variables (`playwright-tests/.env`)
 ```env
-# Target URLs
-TARGET_URL=http://localhost:3000
-PERF_AUDIT_URLS=https://www.google.com,https://www.amazon.in,https://www.wikipedia.org
+# Target base URL used for both security and performance suites
+BASE_URL=http://localhost:3000
 
 # Authentication Secrets
 TEST_USER_EMAIL=jim@juice-sh.op
@@ -212,7 +211,7 @@ Here is a comprehensive directory breakdown of the `playwright-tests/` directory
 
 ## 🎯 Testing Scope Explanation
 
-The testing scope comprises two main pillars: **Automated Security Penetration** (targeting local Juice Shop) and **Dynamic Performance Audit** (targeting universal web targets).
+The testing scope comprises two main pillars: **Automated Security Penetration** (targeting local Juice Shop) and **Dynamic Performance Audit** (targeting the configured `baseURL` application).
 
 ### 1. DOM XSS Injection
 *   **What is being tested:** Injections into client-side JS execution contexts via Hash Fragments, LocalStorage entries, Search Box inputs, and query parameters.
