@@ -1,0 +1,21 @@
+module.exports = {
+  SEARCH_BUTTON: 'button[aria-label="Open search"]',
+  SEARCH_BOX: 'app-mat-search-bar input[type="text"]',
+  EMAIL_INPUT: '#email',
+  PASSWORD_INPUT: '#password',
+  LOGIN_BUTTON: '#loginButton',
+  CHAT_TEXTAREA: 'textarea',
+  COMMENT_TEXTAREA: '#comment',
+  CAPTCHA_TEXT: '#captcha',
+  CAPTCHA_INPUT: '#captchaControl',
+  RATING_SLIDER: 'input[type="range"]',
+  SUBMIT_BUTTON: '#submitButton',
+  NAVBAR_ACCOUNT: '#navbarAccount',
+  LOGOUT_BUTTON: '#navbarLogoutButton',
+  PROFILE_BUTTON: 'button[aria-label="Go to user profile"]',
+  USERNAME_INPUT: '#username',
+  SET_USERNAME_BUTTON: 'button:has-text("Set Username")',
+  DISMISS_BUTTON: 'button:has-text("Dismiss")',
+  APPLE_JUICE: 'text=Apple Juice',
+  SUBMIT_REVIEW_BUTTON: 'button:has-text("Submit")'
+};

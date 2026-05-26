@@ -1,0 +1,63 @@
+{
+  "website": "https://www.amazon.in",
+  "loadTime": 1137,
+  "browser": {
+    "Timestamp": 413247.641098,
+    "AudioHandlers": 0,
+    "AudioWorkletProcessors": 0,
+    "Documents": 3,
+    "Frames": 1,
+    "JSEventListeners": 5,
+    "LayoutObjects": 8,
+    "MediaKeySessions": 0,
+    "MediaKeys": 0,
+    "Nodes": 47,
+    "Resources": 2,
+    "ContextLifecycleStateObservers": 8,
+    "V8PerContextDatas": 4,
+    "WorkerGlobalScopes": 0,
+    "UACSSResources": 0,
+    "RTCPeerConnections": 0,
+    "ResourceFetchers": 3,
+    "AdSubframes": 0,
+    "DetachedScriptStates": 2,
+    "ArrayBufferContents": 14,
+    "LayoutCount": 0,
+    "RecalcStyleCount": 0,
+    "LayoutDuration": 0,
+    "RecalcStyleDuration": 0,
+    "DevToolsCommandDuration": 0.000027,
+    "ScriptDuration": 0,
+    "V8CompileDuration": 0,
+    "TaskDuration": 0.000032,
+    "TaskOtherDuration": 0.000005,
+    "ThreadTime": 0.000089,
+    "ProcessTime": 0.334707,
+    "JSHeapUsedSize": 5053724,
+    "JSHeapTotalSize": 9961472,
+    "FirstMeaningfulPaint": 0,
+    "DomContentLoaded": 413247.58536,
+    "NavigationStart": 413246.500921
+  },
+  "navigation": {
+    "startTime": 0,
+    "domComplete": 1132.300000011921,
+    "domInteractive": 1084.300000011921,
+    "responseStart": 124.19999998807907,
+    "responseEnd": 125.19999998807907,
+    "loadEventEnd": 1132.300000011921,
+    "redirectCount": 0,
+    "transferSize": 2312,
+    "encodedBodySize": 2012,
+    "decodedBodySize": 2012
+  },
+  "paint": {},
+  "resources": [
+    {
+      "name": "https://1c5c1ecf7303.0b384439.ap-southeast-1.token.awswaf.com/1c5c1ecf7303/6ab7d267eef9/66125abca348/challenge.js",
+      "duration": 827.6999999880791,
+      "initiatorType": "script",
+      "transferSize": 0
+    }
+  ]
+}

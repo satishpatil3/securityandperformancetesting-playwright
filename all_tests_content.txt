@@ -1,0 +1,3058 @@
+﻿==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\cookies-test\cookie.spec.js ====
+const { test } = require('@playwright/test');
+
+/*
+  ============================================================
+  CHANGE ONLY THIS URL
+  ============================================================
+*/
+
+const TARGET_URL = 'https://www.amazon.in';
+
+
+
+  // const TARGET_URL = 'https://github.com';
+  // const TARGET_URL = 'https://google.com';
+  // const TARGET_URL = 'https://the-internet.herokuapp.com/cookies';
+  // const TARGET_URL = 'https://demo.owasp-juice.shop';
+  // const TARGET_URL = 'https://facebook.com';
+
+
+
+/*
+  ============================================================
+  UNIVERSAL COOKIE SECURITY TESTING
+  ============================================================
+*/
+
+test('Universal Website Cookie Security Testing', async ({ page, context, request }) => {
+
+  console.log('\n================================================');
+  console.log(' UNIVERSAL COOKIE SECURITY TESTING ');
+  console.log('================================================\n');
+
+  console.log('Testing URL:', TARGET_URL);
+
+  /*
+    ====================================================
+    OPEN WEBSITE
+    ====================================================
+  */
+
+  const response = await page.goto(TARGET_URL, {
+    waitUntil: 'domcontentloaded'
+  });
+
+  // Extra wait for dynamic websites
+  await page.waitForTimeout(5000);
+
+  /*
+    ====================================================
+    GET ALL COOKIES
+    ====================================================
+  */
+
+  const cookies = await context.cookies();
+
+  /*
+    ====================================================
+    TEST 1 - TOTAL COOKIE COUNT
+    ====================================================
+  */
+
+  console.log('\n===== TEST 1 : TOTAL COOKIE COUNT =====\n');
+
+  console.log('Total Cookies Found:', cookies.length);
+
+  /*
+    ====================================================
+    TEST 2 - HTTPONLY FLAG TEST
+    ====================================================
+  */
+
+  console.log('\n===== TEST 2 : HTTPONLY FLAG =====\n');
+
+  if (cookies.length === 0) {
+
+    console.log('No Cookies Found');
+
+  } else {
+
+    for (const cookie of cookies) {
+
+      console.log('Cookie Name:', cookie.name);
+
+      console.log('HttpOnly:',
+        cookie.httpOnly ? 'TRUE' : 'FALSE');
+
+      console.log('--------------------------------');
+    }
+  }
+
+  /*
+    ====================================================
+    TEST 3 - SECURE FLAG TEST
+    ====================================================
+  */
+
+  console.log('\n===== TEST 3 : SECURE FLAG =====\n');
+
+  if (cookies.length === 0) {
+
+    console.log('No Cookies Found');
+
+  } else {
+
+    for (const cookie of cookies) {
+
+      console.log('Cookie Name:', cookie.name);
+
+      console.log('Secure:',
+        cookie.secure ? 'TRUE' : 'FALSE');
+
+      console.log('--------------------------------');
+    }
+  }
+
+  /*
+    ====================================================
+    TEST 4 - SAMESITE POLICY TEST
+    ====================================================
+  */
+
+  console.log('\n===== TEST 4 : SAMESITE POLICY =====\n');
+
+  if (cookies.length === 0) {
+
+    console.log('No Cookies Found');
+
+  } else {
+
+    for (const cookie of cookies) {
+
+      console.log('Cookie Name:', cookie.name);
+
+      console.log('SameSite:', cookie.sameSite);
+
+      console.log('--------------------------------');
+    }
+  }
+
+  /*
+    ====================================================
+    TEST 5 - JAVASCRIPT COOKIE ACCESS TEST
+    ====================================================
+  */
+
+  console.log('\n===== TEST 5 : DOCUMENT.COOKIE ACCESS =====\n');
+
+  const jsCookies = await page.evaluate(() => {
+
+    return document.cookie;
+
+  });
+
+  if (jsCookies.length === 0) {
+
+    console.log('No JavaScript Accessible Cookies Found');
+
+  } else {
+
+    console.log(jsCookies);
+
+    console.log('\nCookies Accessible via JavaScript');
+
+    console.log('Possible Missing HttpOnly Flags');
+  }
+
+  /*
+    ====================================================
+    TEST 6 - FULL COOKIE SECURITY AUDIT
+    ====================================================
+  */
+
+  console.log('\n===== TEST 6 : FULL COOKIE AUDIT =====\n');
+
+  if (cookies.length === 0) {
+
+    console.log('No Cookies Found');
+
+  } else {
+
+    for (const cookie of cookies) {
+
+      console.log({
+
+        name: cookie.name,
+        domain: cookie.domain,
+        path: cookie.path,
+        expires: cookie.expires,
+        httpOnly: cookie.httpOnly,
+        secure: cookie.secure,
+        sameSite: cookie.sameSite
+
+      });
+
+      console.log('--------------------------------');
+    }
+  }
+
+  /*
+    ====================================================
+    TEST 7 - SECURITY HEADERS TEST
+    ====================================================
+  */
+
+  console.log('\n===== TEST 7 : SECURITY HEADERS =====\n');
+
+  try {
+
+    const apiResponse = await request.get(TARGET_URL);
+
+    const headers = apiResponse.headers();
+
+    console.log('Strict-Transport-Security:',
+      headers['strict-transport-security'] || 'NOT FOUND');
+
+    console.log('Content-Security-Policy:',
+      headers['content-security-policy'] || 'NOT FOUND');
+
+    console.log('X-Frame-Options:',
+      headers['x-frame-options'] || 'NOT FOUND');
+
+    console.log('X-Content-Type-Options:',
+      headers['x-content-type-options'] || 'NOT FOUND');
+
+    console.log('Referrer-Policy:',
+      headers['referrer-policy'] || 'NOT FOUND');
+
+    console.log('Permissions-Policy:',
+      headers['permissions-policy'] || 'NOT FOUND');
+
+  } catch (error) {
+
+    console.log('Unable to Fetch Security Headers');
+  }
+
+  /*
+    ====================================================
+    TEST 8 - COOKIE EXPIRY CHECK
+    ====================================================
+  */
+
+  console.log('\n===== TEST 8 : COOKIE EXPIRY =====\n');
+
+  if (cookies.length === 0) {
+
+    console.log('No Cookies Found');
+
+  } else {
+
+    for (const cookie of cookies) {
+
+      console.log('Cookie:', cookie.name);
+
+      if (cookie.expires === -1) {
+
+        console.log('Session Cookie');
+
+      } else {
+
+        const expiryDate =
+          new Date(cookie.expires * 1000);
+
+        console.log('Expiry Date:',
+          expiryDate.toString());
+      }
+
+      console.log('--------------------------------');
+    }
+  }
+
+  /*
+    ====================================================
+    TEST 9 - INSECURE COOKIE DETECTION
+    ====================================================
+  */
+
+  console.log('\n===== TEST 9 : INSECURE COOKIE DETECTION =====\n');
+
+  if (cookies.length === 0) {
+
+    console.log('No Cookies Found');
+
+  } else {
+
+    for (const cookie of cookies) {
+
+      let issues = [];
+
+      if (!cookie.httpOnly) {
+        issues.push('Missing HttpOnly');
+      }
+
+      if (!cookie.secure) {
+        issues.push('Missing Secure');
+      }
+
+      if (cookie.sameSite === 'None') {
+        issues.push('SameSite=None');
+      }
+
+      if (issues.length > 0) {
+
+        console.log('Cookie:', cookie.name);
+
+        console.log('Issues:',
+          issues.join(', '));
+
+        console.log('--------------------------------');
+      }
+    }
+  }
+
+  /*
+    ====================================================
+    TEST 10 - DOMAIN COOKIE GROUPING
+    ====================================================
+  */
+
+  console.log('\n===== TEST 10 : DOMAIN GROUPING =====\n');
+
+  if (cookies.length === 0) {
+
+    console.log('No Cookies Found');
+
+  } else {
+
+    const grouped = {};
+
+    for (const cookie of cookies) {
+
+      if (!grouped[cookie.domain]) {
+        grouped[cookie.domain] = [];
+      }
+
+      grouped[cookie.domain].push(cookie.name);
+    }
+
+    console.log(grouped);
+  }
+
+  /*
+    ====================================================
+    TEST 11 - HTTPS CHECK
+    ====================================================
+  */
+
+  console.log('\n===== TEST 11 : HTTPS CHECK =====\n');
+
+  if (TARGET_URL.startsWith('https://')) {
+
+    console.log('Website Uses HTTPS');
+
+  } else {
+
+    console.log('Website Does NOT Use HTTPS');
+  }
+
+  /*
+    ====================================================
+    TEST 12 - RESPONSE STATUS CODE
+    ====================================================
+  */
+
+  console.log('\n===== TEST 12 : RESPONSE STATUS =====\n');
+
+  if (response) {
+
+    console.log('Status Code:', response.status());
+
+  } else {
+
+    console.log('No Response');
+  }
+
+  /*
+    ====================================================
+    TEST 13 - COOKIE SIZE CHECK
+    ====================================================
+  */
+
+  console.log('\n===== TEST 13 : COOKIE SIZE CHECK =====\n');
+
+  if (cookies.length === 0) {
+
+    console.log('No Cookies Found');
+
+  } else {
+
+    for (const cookie of cookies) {
+
+      const size =
+        cookie.name.length + cookie.value.length;
+
+      console.log('Cookie:', cookie.name);
+
+      console.log('Approx Size:', size, 'bytes');
+
+      if (size > 4096) {
+
+        console.log('WARNING: Cookie exceeds 4KB');
+      }
+
+      console.log('--------------------------------');
+    }
+  }
+
+  /*
+    ====================================================
+    TEST 14 - COOKIE PATH CHECK
+    ====================================================
+  */
+
+  console.log('\n===== TEST 14 : COOKIE PATH CHECK =====\n');
+
+  if (cookies.length === 0) {
+
+    console.log('No Cookies Found');
+
+  } else {
+
+    for (const cookie of cookies) {
+
+      console.log('Cookie:', cookie.name);
+
+      console.log('Path:', cookie.path);
+
+      console.log('--------------------------------');
+    }
+  }
+
+  /*
+    ====================================================
+    TEST 15 - COOKIE DOMAIN CHECK
+    ====================================================
+  */
+
+  console.log('\n===== TEST 15 : COOKIE DOMAIN CHECK =====\n');
+
+  if (cookies.length === 0) {
+
+    console.log('No Cookies Found');
+
+  } else {
+
+    for (const cookie of cookies) {
+
+      console.log('Cookie:', cookie.name);
+
+      console.log('Domain:', cookie.domain);
+
+      console.log('--------------------------------');
+    }
+  }
+
+  console.log('\n================================================');
+  console.log(' SECURITY TESTING COMPLETED ');
+  console.log('================================================\n');
+
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\dom-xss\hash-fragment.spec.js ====
+const { test } = require('@playwright/test');
+const payloads = require('./payloads');
+const {closeWelcomePopup} = require('../../utils/popup-handler');
+
+test('DOM XSS - Hash Fragment', async ({ page }) => {
+
+  page.on('dialog', async dialog => {
+
+    console.log('\nHASH FRAGMENT XSS FOUND');
+    console.log('Alert Message:', dialog.message());
+
+    await dialog.dismiss();
+  });
+
+  await page.goto('http://localhost:3000');
+  await page.waitForTimeout(3000);
+  await closeWelcomePopup(page);
+
+  console.log('Startup popup closed');
+
+  for (const payload of payloads) {
+
+    const encodedPayload =encodeURIComponent(payload);
+
+    console.log('\nTesting Payload:');
+    console.log(payload);
+
+    console.log('\nEncoded Payload:');
+    console.log(encodedPayload);
+
+    const testUrl =`http://localhost:3000/#/${encodedPayload}`;
+
+    console.log('\nAttack URL:');
+    console.log(testUrl);
+
+    await page.goto(testUrl);
+
+    console.log('Attack URL opened');
+
+    await page.waitForTimeout(5000);
+
+    const pageContent =
+      await page.content();
+
+    if (
+      pageContent.includes('onerror') ||
+      pageContent.includes('onload') ||
+      pageContent.includes('script')
+    ) {
+      console.log('Payload reflected in DOM');
+    } else {
+      console.log('Payload NOT reflected');
+    }
+    await page.waitForTimeout(3000);
+  }
+
+  console.log('\nHash Fragment DOM XSS test completed\n');
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\dom-xss\localstorage-dom-xss.spec.js ====
+const { test } = require('@playwright/test');
+const payloads = require('./payloads');
+const {closeWelcomePopup} = require('../../utils/popup-handler');
+
+test('DOM XSS - LocalStorage Injection', async ({ page }) => {
+
+  page.on('dialog', async dialog => {
+
+    console.log('\nLOCALSTORAGE DOM XSS FOUND');
+    console.log('Alert Message:', dialog.message());
+
+    await dialog.dismiss();
+  });
+
+  await page.goto('http://localhost:3000');
+
+  await page.waitForTimeout(3000);
+
+  await closeWelcomePopup(page);
+
+  console.log('Startup popup closed');
+
+  for (const payload of payloads) {
+
+    console.log('\nTesting Payload:');
+    console.log(payload);
+
+    // Store payload in localStorage
+    await page.evaluate((xssPayload) => {
+      localStorage.setItem('search',xssPayload);
+    }, payload);
+
+    console.log('Payload stored in localStorage');
+
+    // Verify stored value
+    const storedValue =
+      await page.evaluate(() => {
+        return localStorage.getItem('search');
+      });
+
+    console.log('\nStored Value:');
+    console.log(storedValue);
+
+    // Reload page
+    await page.reload();
+
+    console.log('Page reloaded');
+
+    await page.waitForTimeout(5000);
+
+    // Check reflection
+    const pageContent =await page.content();
+
+    if (
+      pageContent.includes('onerror') ||
+      pageContent.includes('onload') ||
+      pageContent.includes('script')
+    ) {
+      console.log('Payload reflected from localStorage');
+    } else {
+      console.log('Payload NOT reflected');
+    }
+    await page.waitForTimeout(3000);
+  }
+
+  console.log('\nLocalStorage DOM XSS test completed\n');
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\dom-xss\payloads.js ====
+module.exports = [
+  `<img src=x onerror=alert('dom')>`,
+  `<svg onload=alert('dom')>`,
+  `<script>alert(1)</script>`
+];
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\dom-xss\search-box-dom-injection.spec.js ====
+const { test } = require('@playwright/test');
+
+const payloads = require('./payloads');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test('DOM XSS - Search Box Injection', async ({ page }) => {
+
+  page.on('dialog', async dialog => {
+
+    console.log('\nSEARCH BOX DOM XSS FOUND');
+
+    console.log('Alert Message:',
+      dialog.message());
+
+    await dialog.dismiss();
+  });
+
+  // Open Juice Shop
+  await page.goto('http://localhost:3000');
+
+  // Wait app load
+  await page.waitForTimeout(5000);
+
+  // Close popup
+  await closeWelcomePopup(page);
+
+  console.log('Startup popup closed');
+
+  /*
+    ============================================
+    OPEN SEARCH BAR
+    ============================================
+  */
+
+  const searchButton =
+    page.locator(
+      'button[aria-label="Open search"]'
+    );
+
+  await searchButton.click();
+
+  console.log('Search opened');
+
+  /*
+    ============================================
+    SEARCH INPUT
+    ============================================
+  */
+
+  const searchBox =
+    page.locator(
+      'app-mat-search-bar input[type="text"]'
+    );
+
+  await searchBox.waitFor({
+    state: 'visible',
+    timeout: 10000
+  });
+
+  /*
+    ============================================
+    PAYLOAD TESTING
+    ============================================
+  */
+
+  for (const payload of payloads) {
+
+    console.log('\nTesting Payload:');
+
+    console.log(payload);
+
+    // Clear old value
+    await searchBox.fill('');
+
+    // Enter payload
+    await searchBox.fill(payload);
+
+    console.log('Payload entered');
+
+    // Trigger search
+    await searchBox.press('Enter');
+
+    console.log('Search triggered');
+
+    // Wait DOM update
+    await page.waitForTimeout(5000);
+
+    /*
+      ============================================
+      CHECK REFLECTION
+      ============================================
+    */
+
+    const pageContent =
+      await page.content();
+
+    if (
+      pageContent.includes(payload)
+    ) {
+
+      console.log('Payload reflected in DOM');
+
+    } else {
+
+      console.log('Payload NOT reflected');
+    }
+
+    await page.waitForTimeout(2000);
+  }
+
+  console.log(
+    '\nSearch Box DOM Injection test completed\n'
+  );
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\dom-xss\url-parameter.spec.js ====
+const { test } = require('@playwright/test');
+const payloads = require('./payloads');
+const {closeWelcomePopup} = require('../../utils/popup-handler');
+
+test('DOM XSS - URL Parameter', async ({ page }) => {
+
+  page.on('dialog', async dialog => {
+
+    console.log('\nURL PARAMETER XSS FOUND');
+    console.log('Alert Message:', dialog.message());
+
+    await dialog.dismiss();
+  });
+
+  await page.goto('http://localhost:3000');
+
+  await page.waitForTimeout(3000);
+
+  await closeWelcomePopup(page);
+
+  console.log('Startup popup closed');
+
+  for (const payload of payloads) {
+
+    const encodedPayload =encodeURIComponent(payload);
+
+    console.log('\nTesting Payload:');
+    console.log(payload);
+
+    console.log('\nEncoded Payload:');
+    console.log(encodedPayload);
+
+    const testUrl =`http://localhost:3000/?search=${encodedPayload}`;
+
+    console.log('\nAttack URL:');
+    console.log(testUrl);
+
+    await page.goto(testUrl);
+
+    console.log('Attack URL opened');
+
+    await page.waitForTimeout(5000);
+
+    // Read DOM content
+    const pageContent =await page.content();
+
+    // Verify reflection
+    if (
+      pageContent.includes('onerror') ||
+      pageContent.includes('onload') ||
+      pageContent.includes('script')
+    ) {
+      console.log('Payload reflected in DOM');
+    } else {
+      console.log('Payload NOT reflected');
+    }
+    await page.waitForTimeout(3000);
+  }
+
+  console.log('\nURL Parameter DOM XSS test completed\n');
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\owasp-top10\authentication-failures.spec.js ====
+const { test } =
+  require('@playwright/test');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test(
+  'Identification and Authentication Failures',
+  async ({ page }) => {
+
+    // Open Juice Shop
+    await page.goto(
+      'http://localhost:3000'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    // Close startup popup
+    await closeWelcomePopup(page);
+
+    console.log(
+      'Startup popup closed'
+    );
+
+    // Open login page
+    await page.goto(
+      'http://localhost:3000/#/login'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    console.log(
+      'Login page opened'
+    );
+
+    // Invalid credential attempts
+    const invalidAttempts = [
+
+      {
+        email:
+          'admin@test.com',
+
+        password:
+          'wrongpass'
+      },
+
+      {
+        email:
+          'test@test.com',
+
+        password:
+          '123456'
+      },
+
+      {
+        email:
+          'demo@demo.com',
+
+        password:
+          'password'
+      }
+    ];
+
+    // Perform repeated login attempts
+    for (const creds of invalidAttempts) {
+
+      console.log(
+        '\nTesting Credentials:'
+      );
+
+      console.log(
+        'Email:',
+        creds.email
+      );
+
+      console.log(
+        'Password:',
+        creds.password
+      );
+
+      // Clear fields
+      await page.locator('#email')
+        .fill('');
+
+      await page.locator('#password')
+        .fill('');
+
+      // Fill invalid credentials
+      await page.locator('#email')
+        .fill(creds.email);
+
+      await page.locator('#password')
+        .fill(creds.password);
+
+      // Submit login
+      await page.locator(
+        '#loginButton'
+      ).click();
+
+      console.log(
+        'Login submitted'
+      );
+
+      await page.waitForLoadState(
+        'networkidle'
+      );
+
+      // Read current URL
+      const currentUrl =
+        page.url();
+
+      console.log(
+        '\nCurrent URL:'
+      );
+
+      console.log(currentUrl);
+
+      // Detect login failure
+      if (
+        currentUrl.includes(
+          '/login'
+        )
+      ) {
+
+        console.log(
+          'Invalid credentials rejected'
+        );
+
+      } else {
+
+        console.log(
+          'Unexpected login success detected'
+        );
+
+        // Logout if logged in
+        await page.locator(
+          '#navbarAccount'
+        ).click();
+
+        await page.locator(
+          '#navbarLogoutButton'
+        ).click();
+
+        console.log(
+          'Logged out successfully'
+        );
+
+        await page.waitForLoadState(
+          'networkidle'
+        );
+      }
+    }
+
+    // Check brute-force protection
+    const loginPageContent =
+      await page.content();
+
+    if (
+      loginPageContent
+        .toLowerCase()
+        .includes('too many requests')
+    ) {
+
+      console.log(
+        '\nBrute-force protection detected'
+      );
+
+    } else {
+
+      console.log(
+        '\nNo brute-force protection detected'
+      );
+    }
+
+    console.log(
+      '\nAuthentication Failures test completed\n'
+    );
+  }
+);
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\owasp-top10\broken-access-control.spec.js ====
+const { test } =
+  require('@playwright/test');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test('Broken Access Control', async ({ page }) => {
+
+  // Open admin page directly
+  await page.goto(
+    'http://localhost:3000/#/administration'
+  );
+
+  await page.waitForLoadState(
+    'networkidle'
+  );
+
+  // Close startup popup
+  await closeWelcomePopup(page);
+
+  console.log(
+    'Startup popup closed'
+  );
+
+  // Read page content
+  const pageContent =
+    await page.content();
+
+  // Verify access control
+  if (
+    pageContent.includes(
+      'Administration'
+    )
+  ) {
+
+    console.log(
+      'Access control vulnerability found'
+    );
+
+  } else {
+
+    console.log(
+      'Access properly restricted'
+    );
+  }
+
+  console.log(
+    '\nBroken Access Control test completed\n'
+  );
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\owasp-top10\cryptographic-failures.spec.js ====
+const { test } =
+  require('@playwright/test');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test(
+  'Cryptographic Failures',
+  async ({ page }) => {
+
+    // Open Juice Shop
+    await page.goto(
+      'http://localhost:3000'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    // Close startup popup
+    await closeWelcomePopup(page);
+
+    console.log(
+      'Startup popup closed'
+    );
+
+    // Get current URL
+    const currentUrl =
+      page.url();
+
+    console.log(
+      '\nCurrent URL:'
+    );
+
+    console.log(currentUrl);
+
+    // Check insecure HTTP usage
+    if (
+      currentUrl.startsWith(
+        'http://'
+      )
+    ) {
+
+      console.log(
+        'Insecure HTTP detected'
+      );
+
+    } else {
+
+      console.log(
+        'Secure HTTPS detected'
+      );
+    }
+
+    // Check localStorage for sensitive data
+    const localStorageData =
+      await page.evaluate(() => {
+
+        return {
+          token:
+            localStorage.getItem(
+              'token'
+            ),
+
+          bid:
+            localStorage.getItem(
+              'bid'
+            )
+        };
+      });
+
+    console.log(
+      '\nLocalStorage Data:'
+    );
+
+    console.log(localStorageData);
+
+    if (
+      localStorageData.token
+    ) {
+
+      console.log(
+        'Authentication token stored in localStorage'
+      );
+
+    } else {
+
+      console.log(
+        'No authentication token found'
+      );
+    }
+
+    console.log(
+      '\nCryptographic Failures test completed\n'
+    );
+  }
+);
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\owasp-top10\injection.spec.js ====
+const { test } =
+  require('@playwright/test');
+
+const payloads = [
+
+  `' OR 1=1 --`,
+
+  `" OR "1"="1`,
+
+  `admin' --`,
+
+  `<script>alert('xss')</script>`
+];
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test(
+  'Injection Testing',
+  async ({ browser }) => {
+
+    for (const payload of payloads) {
+
+      // Fresh browser context
+      const context =
+        await browser.newContext();
+
+      const page =
+        await context.newPage();
+
+      // Detect alerts
+      page.on('dialog', async dialog => {
+
+        console.log(
+          '\nXSS ALERT DETECTED'
+        );
+
+        console.log(
+          'Alert Message:',
+          dialog.message()
+        );
+
+        await dialog.dismiss();
+      });
+
+      // Open Juice Shop
+      await page.goto(
+        'http://localhost:3000'
+      );
+
+      await page.waitForLoadState(
+        'networkidle'
+      );
+
+      // Close popup
+      await closeWelcomePopup(page);
+
+      console.log(
+        '\nStartup popup closed'
+      );
+
+      // Open login page
+      await page.goto(
+        'http://localhost:3000/#/login'
+      );
+
+      await page.waitForLoadState(
+        'networkidle'
+      );
+
+      console.log(
+        '\nTesting Payload:'
+      );
+
+      console.log(payload);
+
+      // Wait for fields
+      const emailField =
+        page.locator('#email');
+
+      const passwordField =
+        page.locator('#password');
+
+      await emailField.waitFor({
+        state: 'visible'
+      });
+
+      await passwordField.waitFor({
+        state: 'visible'
+      });
+
+      // Inject payload
+      await emailField.fill(
+        payload
+      );
+
+      await passwordField.fill(
+        payload
+      );
+
+      console.log(
+        'Payload injected'
+      );
+
+      // Login button
+      const loginButton =
+        page.locator('#loginButton');
+
+      await loginButton.waitFor({
+        state: 'visible'
+      });
+
+      // Submit login
+      await loginButton.click({
+        force: true
+      });
+
+      console.log(
+        'Login submitted'
+      );
+
+      await page.waitForLoadState(
+        'networkidle'
+      );
+
+      // Read URL
+      const currentUrl =
+        page.url();
+
+      console.log(
+        '\nCurrent URL:'
+      );
+
+      console.log(currentUrl);
+
+      // Detect bypass
+      if (
+        !currentUrl.includes(
+          '/login'
+        )
+      ) {
+
+        console.log(
+          '\nSQL INJECTION SUCCESSFUL'
+        );
+
+        console.log(
+          `Authentication bypassed using payload: ${payload}`
+        );
+
+      } else {
+
+        console.log(
+          'Application handled payload safely'
+        );
+      }
+
+      console.log(
+        '\nPayload test completed'
+      );
+
+      // Close clean session
+      await context.close();
+    }
+
+    console.log(
+      '\nInjection test completed\n'
+    );
+  }
+);
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\owasp-top10\insecure-design.spec.js ====
+const { test } =
+  require('@playwright/test');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test(
+  'Insecure Design',
+  async ({ page }) => {
+
+    // Open Juice Shop
+    await page.goto(
+      'http://localhost:3000'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    // Close startup popup
+    await closeWelcomePopup(page);
+
+    console.log(
+      'Startup popup closed'
+    );
+
+    // Open login page
+    await page.goto(
+      'http://localhost:3000/#/login'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    console.log(
+      'Login page opened'
+    );
+
+    // Weak credential testing
+    const weakCredentials = [
+
+      {
+        email:
+          'admin@juice-sh.op',
+
+        password:
+          'admin'
+      },
+
+      {
+        email:
+          'test@test.com',
+
+        password:
+          '123456'
+      },
+
+      {
+        email:
+          'demo@demo.com',
+
+        password:
+          'password'
+      }
+    ];
+
+    // Test weak passwords
+    for (const creds of weakCredentials) {
+
+      console.log(
+        '\nTesting Credentials:'
+      );
+
+      console.log(
+        'Email:',
+        creds.email
+      );
+
+      console.log(
+        'Password:',
+        creds.password
+      );
+
+      // Clear fields
+      await page.locator('#email')
+        .fill('');
+
+      await page.locator('#password')
+        .fill('');
+
+      // Fill credentials
+      await page.locator('#email')
+        .fill(creds.email);
+
+      await page.locator('#password')
+        .fill(creds.password);
+
+      // Submit login
+      await page.locator(
+        '#loginButton'
+      ).click();
+
+      console.log(
+        'Login submitted'
+      );
+
+      await page.waitForLoadState(
+        'networkidle'
+      );
+
+      // Read current URL
+      const currentUrl =
+        page.url();
+
+      console.log(
+        '\nCurrent URL:'
+      );
+
+      console.log(currentUrl);
+
+      // Detect successful login
+      if (
+        !currentUrl.includes(
+          '/login'
+        )
+      ) {
+
+        console.log(
+          'Weak credential login succeeded'
+        );
+
+        console.log(
+          'Possible insecure authentication design'
+        );
+
+        // Logout
+        await page.locator(
+          '#navbarAccount'
+        ).click();
+
+        await page.locator(
+          '#navbarLogoutButton'
+        ).click();
+
+        console.log(
+          'Logged out successfully'
+        );
+
+        await page.waitForLoadState(
+          'networkidle'
+        );
+
+      } else {
+
+        console.log(
+          'Weak credentials rejected'
+        );
+      }
+    }
+
+    // Direct admin page access test
+    await page.goto(
+      'http://localhost:3000/#/administration'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    const pageContent =
+      await page.content();
+
+    if (
+      pageContent.includes(
+        'Administration'
+      )
+    ) {
+
+      console.log(
+        '\nAdministration page accessible'
+      );
+
+      console.log(
+        'Possible insecure access design'
+      );
+
+    } else {
+
+      console.log(
+        '\nAdministration page protected'
+      );
+    }
+
+    console.log(
+      '\nInsecure Design test completed\n'
+    );
+  }
+);
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\owasp-top10\integrity-failures.spec.js ====
+const { test } =
+  require('@playwright/test');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test(
+  'Software and Data Integrity Failures',
+  async ({ page }) => {
+
+    // Open Juice Shop
+    await page.goto(
+      'http://localhost:3000'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    // Close startup popup
+    await closeWelcomePopup(page);
+
+    console.log(
+      'Startup popup closed'
+    );
+
+    // Read page HTML
+    const pageContent =
+      (
+        await page.content()
+      ).toLowerCase();
+
+    // Check for inline scripts
+    if (
+      pageContent.includes(
+        '<script'
+      )
+    ) {
+
+      console.log(
+        'Inline script detected'
+      );
+
+    } else {
+
+      console.log(
+        'No inline scripts detected'
+      );
+    }
+
+    // Read all script sources
+    const scriptSources =
+      await page.locator(
+        'script'
+      ).evaluateAll(elements =>
+
+        elements.map(
+          script => script.src
+        )
+      );
+
+    console.log(
+      '\nDetected Script Sources:\n'
+    );
+
+    console.log(scriptSources);
+
+    // Check external scripts
+    for (const src of scriptSources) {
+
+      if (!src) continue;
+
+      // Detect third-party scripts
+      if (
+        !src.includes(
+          'localhost'
+        )
+      ) {
+
+        console.log(
+          `External script detected: ${src}`
+        );
+
+      } else {
+
+        console.log(
+          `Local script detected: ${src}`
+        );
+      }
+    }
+
+    // Check integrity attribute
+    const integrityScripts =
+      await page.locator(
+        'script[integrity]'
+      ).count();
+
+    console.log(
+      '\nScripts using integrity attribute:'
+    );
+
+    console.log(
+      integrityScripts
+    );
+
+    if (
+      integrityScripts === 0
+    ) {
+
+      console.log(
+        'No Subresource Integrity protection detected'
+      );
+
+    } else {
+
+      console.log(
+        'Subresource Integrity detected'
+      );
+    }
+
+    console.log(
+      '\nIntegrity Failures test completed\n'
+    );
+  }
+);
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\owasp-top10\logging-monitoring-failures.spec.js ====
+const { test } =
+  require('@playwright/test');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test(
+  'Security Logging and Monitoring Failures',
+  async ({ page }) => {
+
+    // Capture browser console logs
+    page.on('console', message => {
+
+      console.log(
+        '\nBrowser Console Log:'
+      );
+
+      console.log(
+        message.text()
+      );
+    });
+
+    // Capture page errors
+    page.on('pageerror', error => {
+
+      console.log(
+        '\nBrowser Error Detected:'
+      );
+
+      console.log(
+        error.message
+      );
+    });
+
+    // Open Juice Shop
+    await page.goto(
+      'http://localhost:3000'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    // Close startup popup
+    await closeWelcomePopup(page);
+
+    console.log(
+      'Startup popup closed'
+    );
+
+    // Open invalid page
+    await page.goto(
+      'http://localhost:3000/#/invalid-page'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    console.log(
+      '\nInvalid route opened'
+    );
+
+    // Trigger invalid login attempts
+    await page.goto(
+      'http://localhost:3000/#/login'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    console.log(
+      'Login page opened'
+    );
+
+    const invalidAttempts = 3;
+
+    for (let i = 1; i <= invalidAttempts; i++) {
+
+      console.log(
+        `\nInvalid Login Attempt: ${i}`
+      );
+
+      // Clear fields
+      await page.locator('#email')
+        .fill('');
+
+      await page.locator('#password')
+        .fill('');
+
+      // Enter invalid credentials
+      await page.locator('#email')
+        .fill('admin@test.com');
+
+      await page.locator('#password')
+        .fill('wrongpassword');
+
+      // Submit login
+      await page.locator(
+        '#loginButton'
+      ).click();
+
+      await page.waitForLoadState(
+        'networkidle'
+      );
+
+      console.log(
+        'Invalid login submitted'
+      );
+    }
+
+    // Read page content
+    const pageContent =
+      await page.content();
+
+    // Check monitoring behavior
+    if (
+      pageContent
+        .toLowerCase()
+        .includes('error')
+    ) {
+
+      console.log(
+        '\nApplication displayed error messages'
+      );
+
+    } else {
+
+      console.log(
+        '\nNo visible monitoring/error messages detected'
+      );
+    }
+
+    console.log(
+      '\nLogging and Monitoring test completed\n'
+    );
+  }
+);
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\owasp-top10\security-misconfiguration.spec.js ====
+const { test } =
+  require('@playwright/test');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test('Security Misconfiguration', async ({ page }) => {
+
+  // Open Juice Shop
+  await page.goto(
+    'http://localhost:3000'
+  );
+
+  await page.waitForLoadState(
+    'networkidle'
+  );
+
+  // Close startup popup
+  await closeWelcomePopup(page);
+
+  console.log(
+    'Startup popup closed'
+  );
+
+  // Read response headers
+  const response =
+    await page.goto(
+      'http://localhost:3000'
+    );
+
+  const headers =
+    response.headers();
+
+  console.log('\nResponse Headers:');
+  console.log(headers);
+
+  // Check security headers
+  if (!headers['x-frame-options']) {
+
+    console.log(
+      'Missing X-Frame-Options header'
+    );
+  }
+
+  if (
+    !headers['content-security-policy']
+  ) {
+
+    console.log(
+      'Missing Content-Security-Policy header'
+    );
+  }
+
+  if (
+    !headers['strict-transport-security']
+  ) {
+
+    console.log(
+      'Missing Strict-Transport-Security header'
+    );
+  }
+
+  console.log(
+    '\nSecurity Misconfiguration test completed\n'
+  );
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\owasp-top10\software-supply-chain.spec.js ====
+const { test } =
+  require('@playwright/test');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test(
+  'Software Supply Chain Failures',
+  async ({ page }) => {
+
+    // Open Juice Shop
+    await page.goto(
+      'http://localhost:3000'
+    );
+
+    await page.waitForLoadState(
+      'networkidle'
+    );
+
+    // Close startup popup
+    await closeWelcomePopup(page);
+
+    console.log(
+      'Startup popup closed'
+    );
+
+    // Read full page HTML
+    const pageContent =
+      (
+        await page.content()
+      ).toLowerCase();
+
+    // Common libraries/frameworks
+    // potentially used in Juice Shop
+    const libraries = [
+
+      'angular',
+
+      'rxjs',
+
+      'zone.js',
+
+      'ngx',
+
+      'material',
+
+      'mat-',
+
+      'bootstrap',
+
+      'jquery',
+
+      'webpack',
+
+      'socket.io'
+    ];
+
+    console.log(
+      '\nChecking third-party libraries...\n'
+    );
+
+    // Check each library keyword
+    for (const lib of libraries) {
+
+      if (
+        pageContent.includes(lib)
+      ) {
+
+        console.log(
+          `${lib} detected`
+        );
+
+      } else {
+
+        console.log(
+          `${lib} not detected`
+        );
+      }
+    }
+
+    console.log(
+      '\nSoftware Supply Chain test completed\n'
+    );
+  }
+);
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\owasp-top10\srf.spec.js ====
+const { test } =
+  require('@playwright/test');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test(
+  'Server-Side Request Forgery',
+  async ({ page }) => {
+
+    /*
+      ============================================
+      SSRF PAYLOADS
+      ============================================
+    */
+
+    const payloads = [
+
+      'http://localhost',
+
+      'http://127.0.0.1',
+
+      'http://example.com',
+
+      'file:///etc/passwd'
+    ];
+
+    /*
+      ============================================
+      MONITOR REQUESTS
+      ============================================
+    */
+
+    page.on('request', request => {
+
+      console.log(
+        '\nOutgoing Request:'
+      );
+
+      console.log(
+        request.url()
+      );
+    });
+
+    /*
+      ============================================
+      OPEN JUICE SHOP
+      ============================================
+    */
+
+    await page.goto(
+      'http://localhost:3000'
+    );
+
+    await page.waitForTimeout(5000);
+
+    /*
+      ============================================
+      CLOSE POPUP
+      ============================================
+    */
+
+    await closeWelcomePopup(page);
+
+    console.log(
+      'Startup popup closed'
+    );
+
+    await page.waitForTimeout(3000);
+
+    /*
+      ============================================
+      OPEN SEARCH
+      ============================================
+    */
+
+    const searchButton =
+      page.locator(
+        'button[aria-label="Open search"]'
+      );
+
+    await searchButton.waitFor({
+      state: 'visible',
+      timeout: 10000
+    });
+
+    await searchButton.click();
+
+    console.log(
+      'Search opened'
+    );
+
+    /*
+      ============================================
+      SEARCH INPUT
+      ============================================
+    */
+
+    const searchBox =
+      page.locator(
+        'app-mat-search-bar input[type="text"]'
+      );
+
+    await searchBox.waitFor({
+      state: 'visible',
+      timeout: 10000
+    });
+
+    console.log(
+      'Search box found'
+    );
+
+    /*
+      ============================================
+      TEST PAYLOADS
+      ============================================
+    */
+
+    for (const payload of payloads) {
+
+      console.log(
+        '\n================================'
+      );
+
+      console.log(
+        'Testing Payload:'
+      );
+
+      console.log(payload);
+
+      console.log(
+        '================================\n'
+      );
+
+      /*
+        ----------------------------------------
+        CLEAR OLD VALUE
+        ----------------------------------------
+      */
+
+      await searchBox.fill('');
+
+      /*
+        ----------------------------------------
+        ENTER PAYLOAD
+        ----------------------------------------
+      */
+
+      await searchBox.fill(
+        payload
+      );
+
+      console.log(
+        'Payload injected'
+      );
+
+      /*
+        ----------------------------------------
+        TRIGGER SEARCH
+        ----------------------------------------
+      */
+
+      await searchBox.press(
+        'Enter'
+      );
+
+      console.log(
+        'Search triggered'
+      );
+
+      /*
+        ----------------------------------------
+        WAIT FOR RESPONSE
+        ----------------------------------------
+      */
+
+      await page.waitForTimeout(5000);
+
+      /*
+        ----------------------------------------
+        READ PAGE CONTENT
+        ----------------------------------------
+      */
+
+      const pageContent =
+        await page.content();
+
+      /*
+        ----------------------------------------
+        BASIC DETECTION
+        ----------------------------------------
+      */
+
+      if (
+        pageContent
+          .toLowerCase()
+          .includes('error')
+      ) {
+
+        console.log(
+          'Application handled payload safely'
+        );
+
+      } else {
+
+        console.log(
+          'No visible SSRF behavior detected'
+        );
+      }
+
+      await page.waitForTimeout(3000);
+    }
+
+    /*
+      ============================================
+      TEST COMPLETED
+      ============================================
+    */
+
+    console.log(
+      '\n================================'
+    );
+
+    console.log(
+      'SSRF TEST COMPLETED'
+    );
+
+    console.log(
+      '================================\n'
+    );
+  }
+);
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\reflected-xss\combined-reflection-xss.spec.js ====
+const { test } = require('@playwright/test');
+const payloads = require('./payloads');
+const { closeWelcomePopup} = require('../../utils/popup-handler');
+
+test('Combined Reflected XSS Tests', async ({ page }) => {
+
+  page.on('dialog', async dialog => {
+
+    console.log('\nXSS ALERT DETECTED');
+    console.log('Alert Message:', dialog.message());
+
+    await dialog.dismiss();
+  });
+
+  await page.goto('http://localhost:3000');
+
+  await page.waitForTimeout(3000);
+
+  await closeWelcomePopup(page);
+
+  console.log('Startup popup closed');
+
+  for (const payload of payloads) {
+
+    const encodedPayload =encodeURIComponent(payload);
+
+    console.log('\nTesting Payload:');
+    console.log(payload);
+
+    // Error page reflection
+    const errorPageUrl =`http://localhost:3000/error?msg=${encodedPayload}`;
+
+    console.log('\nError Page URL:');
+    console.log(errorPageUrl);
+
+    await page.goto(errorPageUrl);
+
+    console.log('Error page opened');
+
+    await page.waitForTimeout(5000);
+
+    let pageContent =await page.content();
+
+    if (
+      pageContent.includes('onerror') ||
+      pageContent.includes('onload') ||
+      pageContent.includes('script')
+    ) {
+      console.log('Payload reflected in error page');
+    } else {
+      console.log('Payload NOT reflected in error page');
+    }
+
+    // Search query reflection
+    const searchUrl =`http://localhost:3000/#/search?q=${encodedPayload}`;
+
+    console.log('\nSearch URL:');
+    console.log(searchUrl);
+
+    await page.goto(searchUrl);
+
+    console.log('Search page opened');
+
+    await page.waitForTimeout(5000);
+
+    pageContent =await page.content();
+
+    if (
+      pageContent.includes('onerror') ||
+      pageContent.includes('onload') ||
+      pageContent.includes('script')
+    ) {
+      console.log('Payload reflected in search page');
+    } else {
+      console.log('Payload NOT reflected in search page');
+    }
+
+    await page.waitForTimeout(3000);
+  }
+
+  console.log('\nCombined reflected XSS tests completed\n');
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\reflected-xss\header-reflection.spec.js ====
+const { test } = require('@playwright/test');
+const payloads = require('./payloads');
+const {closeWelcomePopup} = require('../../utils/popup-handler');
+
+test('Reflected XSS - Header Based Reflection', async ({ page }) => {
+
+  page.on('dialog', async dialog => {
+
+    console.log('\nHEADER XSS EXECUTED');
+    console.log('Alert Message:', dialog.message());
+
+    await dialog.dismiss();
+  });
+
+  for (const payload of payloads) {
+
+    console.log('\nTesting Payload:');
+    console.log(payload);
+
+    const context =
+      await page.context()
+        .browser()
+        .newContext({
+
+          userAgent: payload,
+
+          extraHTTPHeaders: {
+            referer: payload
+          }
+        });
+
+    const attackPage =await context.newPage();
+
+    attackPage.on('dialog', async dialog => {
+
+      console.log('\nHEADER-BASED XSS FOUND');
+      console.log('Alert Message:', dialog.message());
+
+      await dialog.dismiss();
+    });
+
+    await attackPage.goto('http://localhost:3000');
+
+    await attackPage.waitForTimeout(3000);
+
+    await closeWelcomePopup(attackPage);
+
+    console.log('Startup popup closed');
+
+    await attackPage.waitForTimeout(5000);
+
+    const pageContent =await attackPage.content();
+
+    if (
+      pageContent.includes('onerror') ||
+      pageContent.includes('onload') ||
+      pageContent.includes('script')
+    ) {
+      console.log('Payload reflected in page');
+    } else {
+      console.log('Payload NOT reflected');
+    }
+
+    await attackPage.waitForTimeout(3000);
+
+    await context.close();
+  }
+
+  console.log('\nHeader reflection test completed\n');
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\reflected-xss\payloads.js ====
+module.exports = [
+  `<script>alert(1)</script>`,
+  `<img src=x onerror=alert(1)>`,
+  `<svg onload=alert(1)>`,
+  `"><img src=x onerror=alert(1)>`
+];
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\reflected-xss\reflected-login.spec.js ====
+const { test } = require('@playwright/test');
+
+const payloads = require('./payloads');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test('Reflected XSS - Login', async ({ page }) => {
+
+  page.on('dialog', async dialog => {
+
+    console.log('\nLOGIN XSS FOUND');
+    console.log('Alert Message:', dialog.message());
+
+    await dialog.dismiss();
+  });
+
+  await page.goto('http://localhost:3000');
+
+  await page.waitForTimeout(3000);
+
+  await closeWelcomePopup(page);
+
+  console.log('Startup popup closed');
+
+  for (const payload of payloads) {
+
+    console.log('\nTesting Payload:');
+    console.log(payload);
+
+    await page.goto(
+      'http://localhost:3000/#/login'
+    );
+
+    // Inject payload into email field
+    await page.locator('#email')
+      .fill(payload);
+
+    // Dummy password
+    await page.locator('#password')
+      .fill('123');
+
+    // Submit login
+    await page.locator('#loginButton')
+      .click();
+
+    console.log('Login submitted');
+
+    await page.waitForTimeout(5000);
+
+    // Check reflection
+    const pageContent =
+      await page.content();
+
+    if (
+      pageContent.includes('onerror') ||
+      pageContent.includes('onload') ||
+      pageContent.includes('script')
+    ) {
+
+      console.log(
+        'Payload reflected in login page'
+      );
+
+    } else {
+
+      console.log(
+        'Payload NOT reflected'
+      );
+    }
+
+    await page.waitForTimeout(3000);
+  }
+
+  console.log(
+    '\nLogin reflected XSS test completed\n'
+  );
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\reflected-xss\reflected-search.spec.js ====
+const { test } = require('@playwright/test');
+
+const payloads = require('./payloads');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test('Reflected XSS - Search', async ({ page }) => {
+
+  /*
+    ====================================================
+    ALERT DETECTION
+    ====================================================
+  */
+
+  page.on('dialog', async dialog => {
+
+    console.log('\n================================');
+
+    console.log('REFLECTED XSS FOUND');
+
+    console.log('Alert Message:',
+      dialog.message());
+
+    console.log('================================\n');
+
+    await dialog.dismiss();
+  });
+
+  /*
+    ====================================================
+    OPEN JUICE SHOP
+    ====================================================
+  */
+
+  await page.goto('http://localhost:3000');
+
+  // Wait app load
+  await page.waitForTimeout(5000);
+
+  /*
+    ====================================================
+    CLOSE STARTUP POPUP
+    ====================================================
+  */
+
+  await closeWelcomePopup(page);
+
+  console.log('Startup popup closed');
+
+  await page.waitForTimeout(3000);
+
+  /*
+    ====================================================
+    OPEN SEARCH BAR
+    ====================================================
+  */
+
+  const searchButton =
+    page.locator(
+      'button[aria-label="Open search"]'
+    );
+
+  await searchButton.waitFor({
+    state: 'visible',
+    timeout: 10000
+  });
+
+  await searchButton.click();
+
+  console.log('Search opened');
+
+  /*
+    ====================================================
+    LOCATE SEARCH INPUT
+    ====================================================
+  */
+
+  const searchBox =
+    page.locator(
+      'app-mat-search-bar input[type="text"]'
+    );
+
+  await searchBox.waitFor({
+    state: 'visible',
+    timeout: 10000
+  });
+
+  console.log('Search box found');
+
+  /*
+    ====================================================
+    TEST ALL PAYLOADS
+    ====================================================
+  */
+
+  for (const payload of payloads) {
+
+    console.log('\n================================');
+
+    console.log('Testing Payload:');
+
+    console.log(payload);
+
+    console.log('================================\n');
+
+    /*
+      ----------------------------------------
+      CLEAR OLD VALUE
+      ----------------------------------------
+    */
+
+    await searchBox.fill('');
+
+    /*
+      ----------------------------------------
+      ENTER PAYLOAD
+      ----------------------------------------
+    */
+
+    await searchBox.fill(payload);
+
+    console.log('Payload entered');
+
+    /*
+      ----------------------------------------
+      TRIGGER SEARCH
+      ----------------------------------------
+    */
+
+    await searchBox.press('Enter');
+
+    console.log('Search triggered');
+
+    /*
+      ----------------------------------------
+      WAIT FOR DOM UPDATE
+      ----------------------------------------
+    */
+
+    await page.waitForTimeout(5000);
+
+    /*
+      ----------------------------------------
+      CHECK REFLECTION
+      ----------------------------------------
+    */
+
+    const pageContent =
+      await page.content();
+
+    if (
+      pageContent.includes(payload)
+    ) {
+
+      console.log('Payload reflected in DOM');
+
+    } else {
+
+      console.log('Payload NOT reflected');
+    }
+
+    /*
+      ----------------------------------------
+      EXTRA WAIT
+      ----------------------------------------
+    */
+
+    await page.waitForTimeout(3000);
+  }
+
+  /*
+    ====================================================
+    TEST COMPLETED
+    ====================================================
+  */
+
+  console.log('\n================================');
+
+  console.log('REFLECTED XSS SEARCH TEST COMPLETED');
+
+  console.log('================================\n');
+
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\stored-xss\chat-message-stored-xss.spec.js ====
+const { test } = require('@playwright/test');
+
+const payloads = require('./payloads');
+
+const {
+  closeWelcomePopup
+} = require('../../utils/popup-handler');
+
+test('Stored XSS - Support Chat', async ({ page }) => {
+
+  /*
+    ====================================================
+    ALERT DETECTION
+    ====================================================
+  */
+
+  page.on('dialog', async dialog => {
+
+    console.log('\n================================');
+
+    console.log('CHAT STORED XSS FOUND');
+
+    console.log('Alert Message:',
+      dialog.message());
+
+    console.log('================================\n');
+
+    await dialog.dismiss();
+  });
+
+  /*
+    ====================================================
+    OPEN JUICE SHOP
+    ====================================================
+  */
+
+  await page.goto('http://localhost:3000');
+
+  // Wait app load
+  await page.waitForTimeout(5000);
+
+  /*
+    ====================================================
+    CLOSE WELCOME POPUP
+    ====================================================
+  */
+
+  await closeWelcomePopup(page);
+
+  console.log('Startup popup closed');
+
+  /*
+    ====================================================
+    OPEN CHATBOT PAGE DIRECTLY
+    ====================================================
+  */
+
+  await page.goto(
+    'http://localhost:3000/#/chatbot'
+  );
+
+  console.log('Support chat page opened');
+
+  // Wait chatbot render
+  await page.waitForTimeout(5000);
+
+  /*
+    ====================================================
+    CHAT INPUT
+    ====================================================
+  */
+
+  const chatInput =
+    page.locator('textarea');
+
+  await chatInput.waitFor({
+    state: 'visible',
+    timeout: 15000
+  });
+
+  console.log('Chat input found');
+
+  /*
+    ====================================================
+    TEST ALL PAYLOADS
+    ====================================================
+  */
+
+  for (const payload of payloads) {
+
+    console.log('\n================================');
+
+    console.log('Testing Payload:');
+
+    console.log(payload);
+
+    console.log('================================\n');
+
+    /*
+      ----------------------------------------
+      CLEAR OLD MESSAGE
+      ----------------------------------------
+    */
+
+    await chatInput.fill('');
+
+    /*
+      ----------------------------------------
+      ENTER PAYLOAD
+      ----------------------------------------
+    */
+
+    await chatInput.fill(payload);
+
+    console.log('Payload entered');
+
+    /*
+      ----------------------------------------
+      SEND MESSAGE
+      ----------------------------------------
+    */
+
+    await chatInput.press('Enter');
+
+    console.log('Message sent');
+
+    /*
+      ----------------------------------------
+      WAIT FOR CHAT UPDATE
+      ----------------------------------------
+    */
+
+    await page.waitForTimeout(5000);
+
+    /*
+      ----------------------------------------
+      CHECK REFLECTION
+      ----------------------------------------
+    */
+
+    const pageContent =
+      await page.content();
+
+    if (
+      pageContent.includes(payload)
+    ) {
+
+      console.log('Payload reflected in chat');
+
+    } else {
+
+      console.log('Payload NOT reflected');
+    }
+
+    /*
+      ----------------------------------------
+      EXTRA WAIT
+      ----------------------------------------
+    */
+
+    await page.waitForTimeout(3000);
+  }
+
+  /*
+    ====================================================
+    TEST COMPLETED
+    ====================================================
+  */
+
+  console.log('\n================================');
+
+  console.log('CHAT STORED XSS TEST COMPLETED');
+
+  console.log('================================\n');
+
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\stored-xss\feedback-xss.spec.js ====
+const { test } = require('@playwright/test');
+const payloads = require('./payloads');
+const {closeWelcomePopup} = require('../../utils/popup-handler');
+
+test('Stored XSS - Feedback Form', async ({ page }) => {
+
+  page.on('dialog', async dialog => {
+    console.log(' STORED XSS FOUND');
+    console.log(dialog.message());
+    await dialog.dismiss();
+  });
+
+  await page.goto('http://localhost:3000');
+
+  await page.waitForTimeout(3000);
+
+  await closeWelcomePopup(page);
+
+  // Open feedback page
+  await page.goto(
+    'http://localhost:3000/#/contact'
+  );
+
+  for (const payload of payloads) {
+
+    console.log('\nTesting:', payload);
+
+    // Fill comment
+    await page.locator('#comment').fill(payload);
+
+    // Read captcha
+    const captchaText =
+      await page.locator('#captcha').textContent();
+
+    console.log('Captcha:', captchaText);
+
+    // Solve captcha
+    const captchaAnswer = eval(captchaText);
+
+    console.log('Answer:', captchaAnswer);
+
+    // Fill captcha answer
+    await page
+      .locator('#captchaControl')
+      .fill(captchaAnswer.toString());
+
+    // Set rating
+    await page
+      .locator('input[type="range"]')
+      .evaluate(el => {
+
+        el.value = 5;
+
+        el.dispatchEvent(
+          new Event('input', { bubbles: true })
+        );
+
+        el.dispatchEvent(
+          new Event('change', { bubbles: true })
+        );
+      });
+
+    // Submit form
+    await page.locator('#submitButton').click();
+
+    console.log('Form submitted');
+
+    await page.waitForTimeout(3000);
+  }
+
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\stored-xss\payloads.js ====
+module.exports = [
+  `<img src=x onerror=alert('stored')>`,
+  `<svg onload=alert('stored')>`,
+  `<script>alert('stored')</script>`
+];
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\stored-xss\product-review-xss.spec.js ====
+const { test, expect } = require('@playwright/test');
+
+const {closeWelcomePopup} = require('../../utils/popup-handler');
+
+test('Stored XSS - Product Review', async ({ page }) => {
+  // XSS Detection Handler
+
+  page.on('dialog', async dialog => {
+
+    console.log('STORED XSS EXECUTED');
+    console.log('Alert Message:', dialog.message());
+
+    await dialog.dismiss();
+  });
+
+  // Open Juice Shop
+  await page.goto('http://localhost:3000');
+
+  await page.waitForTimeout(3000);
+
+  // Close startup popup
+  await closeWelcomePopup(page);
+
+  await page.goto(
+    'http://localhost:3000/#/login'
+  );
+
+  // Enter email
+  await page.locator('#email')
+    .fill('jim@juice-sh.op');
+
+  // Enter password
+  await page.locator('#password')
+    .fill('ncc-1701');
+
+  // Click login
+  await page.locator('#loginButton')
+    .click();
+
+  console.log('Logged in');
+
+  await page.waitForTimeout(4000);
+
+  // Open Product
+
+  await page.locator('text=Apple Juice')
+    .click();
+
+  console.log('Product opened');
+
+  await page.waitForTimeout(4000);
+
+  // Scroll to Review Section
+  const reviewTextarea =
+    page.locator('textarea');
+
+  await reviewTextarea.scrollIntoViewIfNeeded();
+
+  await page.waitForTimeout(2000);
+
+  // XSS Payload
+  const payload =
+    `<img src=x onerror=alert('stored-review')>`;
+
+  console.log('Payload:', payload);
+
+  // Fill Review
+
+  await reviewTextarea.fill(payload);
+
+  console.log('Review text entered');
+
+  await page.waitForTimeout(2000);
+
+  // Click Submit Review Button
+  const submitButton =page.locator('button:has-text("Submit")');
+
+  // Verify button visible
+  await expect(submitButton).toBeVisible();
+
+  // Click submit
+  await submitButton.click();
+
+  console.log('Review submitted');
+
+  await page.waitForTimeout(5000);
+
+  // RELOAD PAGE
+  console.log('Reloading page to verify persistence...');
+
+  await page.reload();
+
+  await page.waitForTimeout(5000);
+
+  // Verify Stored Payload Appears
+  const pageContent = await page.content();
+
+  if (pageContent.includes(payload)) {
+    console.log('Payload persisted in page content');
+  } else {
+    console.log('Payload NOT found after reload');
+  }
+
+  // Extra wait to detect alert execution
+  await page.waitForTimeout(5000);
+
+  console.log('\n Stored XSS test completed\n');
+});
+
+==== FILE: C:\Users\satis\Downloads\mIntern\Security-testing-Playwright-main\playwright-tests\tests\stored-xss\profile-stored-xss.spec.js ====
+const { test } = require('@playwright/test');
+const payloads = require('./payloads');
+const {closeWelcomePopup} = require('../../utils/popup-handler');
+
+test('Stored XSS - User Profile', async ({ page }) => {
+
+  // Detect executed payloads
+  page.on('dialog', async dialog => {
+
+    console.log(' PROFILE STORED XSS FOUND');
+    console.log('Alert Message:', dialog.message());
+
+    await dialog.dismiss();
+  });
+
+  // Open Juice Shop
+  await page.goto('http://localhost:3000');
+
+  await page.waitForTimeout(3000);
+
+  await closeWelcomePopup(page);
+
+  console.log(' Startup popup closed');
+
+  // Login
+  await page.goto(
+    'http://localhost:3000/#/login'
+  );
+
+  await page.locator('#email').fill('jim@juice-sh.op');
+  await page.locator('#password').fill('ncc-1701');
+
+  await page.locator('#loginButton').click();
+  console.log(' Logged in');
+
+  await page.waitForTimeout(5000);
+
+  // Open profile page
+  await page.locator('#navbarAccount').click();
+  await page.waitForTimeout(2000);
+
+  await page.locator('button[aria-label="Go to user profile"]').click();
+  console.log(' Profile page opened');
+
+  await page.waitForTimeout(5000);
+
+  // Username field
+  const usernameField =page.locator('#username');
+
+  await usernameField.waitFor({
+    state: 'visible'
+  });
+
+  // Test all payloads
+  for (const payload of payloads) {
+    console.log('Testing Payload:');
+    console.log(payload);
+
+    // Clear existing value
+    await usernameField.fill('');
+
+    // Inject payload
+    await usernameField.fill(payload);
+
+    console.log(' Payload entered');
+
+    // Save username
+    await page.locator('button:has-text("Set Username")').click();
+
+    console.log(' Username updated');
+
+    await page.waitForTimeout(5000);
+
+    // Reload to verify persistence
+    await page.reload();
+
+    console.log(' Page reloaded');
+
+    await page.waitForTimeout(5000);
+
+    // Check reflection
+    const pageContent =
+      await page.content();
+
+    if (
+      pageContent.includes('onerror') ||
+      pageContent.includes('onload') ||
+      pageContent.includes('script')
+    ) {
+      console.log(' Payload reflected from profile');
+    } else {
+      console.log(' Payload NOT reflected');
+    }
+    // Wait for possible execution
+    await page.waitForTimeout(3000);
+  }
+
+  console.log(
+    '\n Profile Stored XSS test completed\n'
+  );
+});
+

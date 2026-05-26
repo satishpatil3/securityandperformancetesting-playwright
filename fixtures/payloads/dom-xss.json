@@ -1,0 +1,5 @@
+[
+  "<img src=x onerror=alert('dom')>",
+  "<svg onload=alert('dom')>",
+  "<script>alert(1)</script>"
+]

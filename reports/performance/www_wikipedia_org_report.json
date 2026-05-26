@@ -1,0 +1,83 @@
+{
+  "website": "https://www.wikipedia.org",
+  "loadTime": 664,
+  "browser": {
+    "Timestamp": 413248.458534,
+    "AudioHandlers": 0,
+    "AudioWorkletProcessors": 0,
+    "Documents": 5,
+    "Frames": 2,
+    "JSEventListeners": 31,
+    "LayoutObjects": 1765,
+    "MediaKeySessions": 0,
+    "MediaKeys": 0,
+    "Nodes": 3528,
+    "Resources": 4,
+    "ContextLifecycleStateObservers": 5,
+    "V8PerContextDatas": 4,
+    "WorkerGlobalScopes": 0,
+    "UACSSResources": 0,
+    "RTCPeerConnections": 0,
+    "ResourceFetchers": 5,
+    "AdSubframes": 0,
+    "DetachedScriptStates": 2,
+    "ArrayBufferContents": 1,
+    "LayoutCount": 0,
+    "RecalcStyleCount": 0,
+    "LayoutDuration": 0,
+    "RecalcStyleDuration": 0,
+    "DevToolsCommandDuration": 0.000027,
+    "ScriptDuration": 0,
+    "V8CompileDuration": 0,
+    "TaskDuration": 0.000032,
+    "TaskOtherDuration": 0.000005,
+    "ThreadTime": 0,
+    "ProcessTime": 0.4375,
+    "JSHeapUsedSize": 1356160,
+    "JSHeapTotalSize": 2621440,
+    "FirstMeaningfulPaint": 0,
+    "DomContentLoaded": 413248.446929,
+    "NavigationStart": 413247.792563
+  },
+  "navigation": {
+    "startTime": 0,
+    "domComplete": 659,
+    "domInteractive": 654.3999999761581,
+    "responseStart": 266.89999997615814,
+    "responseEnd": 275.89999997615814,
+    "loadEventEnd": 659.1000000238419,
+    "redirectCount": 0,
+    "transferSize": 30753,
+    "encodedBodySize": 30453,
+    "decodedBodySize": 120318
+  },
+  "paint": {
+    "first-paint": 640
+  },
+  "resources": [
+    {
+      "name": "https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png",
+      "duration": 144.0999999642372,
+      "initiatorType": "img",
+      "transferSize": 16129
+    },
+    {
+      "name": "https://www.wikipedia.org/portal/wikipedia.org/assets/js/index-34f340e24a.js",
+      "duration": 205.69999998807907,
+      "initiatorType": "script",
+      "transferSize": 8920
+    },
+    {
+      "name": "https://www.wikipedia.org/portal/wikipedia.org/assets/js/gt-ie9-507b16b6be.js",
+      "duration": 162.69999998807907,
+      "initiatorType": "script",
+      "transferSize": 880
+    },
+    {
+      "name": "https://www.wikipedia.org/portal/wikipedia.org/assets/img/sprite-e49fbf32.svg",
+      "duration": 184.19999998807907,
+      "initiatorType": "css",
+      "transferSize": 18619
+    }
+  ]
+}
