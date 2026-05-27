@@ -149,15 +149,13 @@ class PerformanceHelper {
 
 
 
-    // LOGGING
-
     Logger.header(
       'PERFORMANCE METRICS'
     );
 
     Logger.metric(
       'JS Heap Used',
-      browserMetrics.JSHeapUsedSize
+      `${(browserMetrics.JSHeapUsedSize / (1024 * 1024)).toFixed(2)} MB (${browserMetrics.JSHeapUsedSize} bytes)`
     );
 
     Logger.metric(
@@ -172,24 +170,67 @@ class PerformanceHelper {
 
     Logger.performance(
       'DOM Complete',
-      navigationMetrics.domComplete
+      `${navigationMetrics.domComplete.toFixed(2)} ms`
+    );
+
+    Logger.performance(
+      'TTFB (Time to First Byte)',
+      `${navigationMetrics.responseStart.toFixed(2)} ms`
+    );
+
+    Logger.performance(
+      'DOM Interactive',
+      `${navigationMetrics.domInteractive.toFixed(2)} ms`
+    );
+
+    const dnsTime = navigationMetrics.domainLookupEnd - navigationMetrics.domainLookupStart;
+    Logger.performance(
+      'DNS Lookup Time',
+      `${dnsTime.toFixed(2)} ms`
+    );
+
+    const tcpTime = navigationMetrics.connectEnd - navigationMetrics.connectStart;
+    Logger.performance(
+      'TCP Connection Time',
+      `${tcpTime.toFixed(2)} ms`
+    );
+
+    const sslTime = navigationMetrics.secureConnectionStart > 0
+      ? navigationMetrics.connectEnd - navigationMetrics.secureConnectionStart
+      : 0;
+    Logger.performance(
+      'SSL Handshake Time',
+      `${sslTime.toFixed(2)} ms`
     );
 
     Logger.performance(
       'First Paint',
-      paintMetrics['first-paint']
+      `${paintMetrics['first-paint'] !== undefined ? paintMetrics['first-paint'].toFixed(2) : 'N/A'} ms`
     );
 
     Logger.performance(
       'First Contentful Paint',
-      paintMetrics[
-        'first-contentful-paint'
-      ]
+      `${paintMetrics['first-contentful-paint'] !== undefined ? paintMetrics['first-contentful-paint'].toFixed(2) : 'N/A'} ms`
     );
 
     Logger.info(
       'Total Resources:',
       resourceMetrics.length
+    );
+
+    Logger.info(
+      'Network Transfer Size:',
+      `${(navigationMetrics.transferSize / 1024).toFixed(2)} KB`
+    );
+
+    Logger.info(
+      'Encoded Body Size:',
+      `${(navigationMetrics.encodedBodySize / 1024).toFixed(2)} KB`
+    );
+
+    Logger.info(
+      'Decoded Body Size (Uncompressed):',
+      `${(navigationMetrics.decodedBodySize / 1024).toFixed(2)} KB`
     );
 
 
@@ -218,18 +259,6 @@ class PerformanceHelper {
 
 
     // REPORT GENERATION
-
-    ReportGenerator
-      .generateJSONReport(
-        url,
-        reportData
-      );
-
-    ReportGenerator
-      .generateSimpleHTMLReport(
-        url,
-        reportData
-      );
 
     ReportGenerator
       .generateSummary(

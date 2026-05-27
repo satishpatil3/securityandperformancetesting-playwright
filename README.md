@@ -62,7 +62,7 @@ The framework execution occurs in a highly structured lifecycle to prevent flaky
 5.  **Payload Injection Loop:** The spec loops through each payload, injecting it into target components (inputs, hash fragments, headers, local storage) using [XSSPage](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/pages/xss.page.js).
 6.  **Reflection Check:** [XSSHelper](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/helpers/xss.helper.js) analyzes the current page content and DOM structure. If the injected script string is found in the DOM unescaped, it logs a reflection success/failure.
 7.  **Structured Log Output:** Throughout runtime, [Logger](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/utils/logger.js) outputs formatted console statements with ANSI escape color codes, indicating `[INFO]`, `[SUCCESS]`, `[WARN]`, or `[ERROR]`.
-8.  **Performance Auditing Output:** If running performance checks, [PerformanceHelper](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/helpers/performance.helper.js) calls [ReportGenerator](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/utils/report-generator.js) which outputs structured JSON and static HTML tables summarizing load and paint metrics into the `reports/performance/` directory.
+8.  **Performance Auditing Output:** If running performance checks, [PerformanceHelper](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/helpers/performance.helper.js) calls [ReportGenerator](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/utils/report-generator.js) which outputs structured summaries of load, paint, and memory metrics directly to the console.
 
 ---
 
@@ -142,8 +142,7 @@ npx playwright test --headed
 npx playwright show-report
 ```
 
-For performance test runs, access the custom JSON and HTML metrics reports in the following folder:
-`playwright-tests/reports/performance/` (e.g., [reports/performance/](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/reports/performance/)).
+Performance metrics and summaries are printed dynamically in the console output after each test execution.
 
 ---
 
@@ -186,8 +185,8 @@ TEST_TIMEOUT=60000
     Unlike heavy, slow Lighthouse integrations, this framework accesses performance metrics dynamically via Chrome DevTools Protocol (CDP) session mapping. It reads raw page paint timings, browser memory usage, and document object models directly from Chromium.
 4.  **CI/CD Integration Ready:**
     The workflow configured in [playwright.yml](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/.github/workflows/playwright.yml) runs on every push and pull request. It checks build compliance, executes all tests headlessly in `ubuntu-latest`, and uploads output logs and HTML report artifacts for easy audit retention.
-5.  **Strict Parallelization Control:**
-    The configuration disables fully parallel runs (`fullyParallel: false`) and limits execution to `workers: 1`. This is a crucial security-testing standard, preventing parallel payloads from overlapping or invalidating session tokens.
+5.  **High-Performance Parallelization:**
+    The configuration supports running tests fully in parallel (`fullyParallel: true`) with multiple workers (`workers: 4` local / `2` CI). This enables rapid execution across different test suites and scenarios, launching multiple browser windows concurrently.
 6.  **Fail-Safe Retry Mechanism:**
     Configured retries (`retries: process.env.CI ? 2 : 0`) ensure flaky network delays during server boot in CI/CD environments do not trigger false positives.
 
@@ -205,7 +204,6 @@ Here is a comprehensive directory breakdown of the `playwright-tests/` directory
 | **[utils/](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/utils)** | Independent supporting utilities | Color stdout logs / data loaders / CDP sessions | Framework utility functions | Provides low-level modules like logging, loading files, and collecting page statistics. |
 | **[constants/](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/constants)** | Houses static configurations | Central selectors, routes, and thresholds | Static configuration parameters | Centralizes routes, locators, and performance thresholds to eliminate magic strings. |
 | **[fixtures/](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/fixtures)** | Stores datasets / payloads | Malicious input arrays in JSON | Test data storage | Separates test code from security injection strings and testing variables. |
-| **[reports/](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/reports)** | Captures audit performance runs | Custom JSON and HTML audit tables | Test report persistence | Stores human-readable and machine-parseable audit logs from performance test runs. |
 
 ---
 
@@ -254,12 +252,12 @@ The testing scope comprises two main pillars: **Automated Security Penetration**
 *   **Maintainability Value:** Completely decoupled from site UI, running against raw network contexts.
 
 ### 6. Performance Auditing
-*   **What is being tested:** Total load times, Paint metrics (First Paint, First Contentful Paint), DOM node count, CPU/JS Heap Memory size, resources size, and network redirect counters.
+*   **What is being tested:** Total load times, Paint metrics (First Paint, First Contentful Paint), DOM node count, CPU/JS Heap Memory size, resources count/size, network redirect counters, Time to First Byte (TTFB), DOM Interactive milestones, and network timing details (DNS lookup, TCP connection, SSL handshake).
 *   **Why it is important:** Page load speed directly determines web SEO visibility, bounce rates, and user retention.
 *   **Business Value:** Faster pages maximize conversions, customer retention, and reduce cloud computing bandwidth.
 *   **Testing Value:** Prevents memory leaks and heavy assets regressions before merging to production.
 *   **Automation Value:** Leverages CDP sessions to fetch hardware-level metrics without third-party extension overhead.
-*   **Maintainability Value:** Auto-generates structured reports using [ReportGenerator](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/utils/report-generator.js).
+*   **Maintainability Value:** Prints structured console summaries using [ReportGenerator](file:///c:/Users/satish.patil1/Sp-learning/security-testing-playwright-juiceshop-main/playwright-tests/utils/report-generator.js).
 
 ---
 

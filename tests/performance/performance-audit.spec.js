@@ -1,18 +1,9 @@
-const { test } =
-  require('@playwright/test');
+const { test } =require('@playwright/test');
+const PerformanceHelper =require('../../helpers/performance.helper');
+const Logger =require('../../utils/logger');
+const THRESHOLDS =require('../../constants/performance-thresholds');
 
-const PerformanceHelper =
-  require('../../helpers/performance.helper');
-
-const Logger =
-  require('../../utils/logger');
-
-const THRESHOLDS =
-  require('../../constants/performance-thresholds');
-
-test.describe(
-  'Performance Testing Suite',
-  () => {
+test.describe('Performance Testing Suite',() => {
 
   test(
     'Performance Audit',

@@ -86,7 +86,22 @@ class MetricsCollector {
           navigation.encodedBodySize,
 
         decodedBodySize:
-          navigation.decodedBodySize
+          navigation.decodedBodySize,
+
+        domainLookupStart:
+          navigation.domainLookupStart,
+
+        domainLookupEnd:
+          navigation.domainLookupEnd,
+
+        connectStart:
+          navigation.connectStart,
+
+        connectEnd:
+          navigation.connectEnd,
+
+        secureConnectionStart:
+          navigation.secureConnectionStart
       };
     });
   }
